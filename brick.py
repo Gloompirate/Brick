@@ -93,13 +93,13 @@ class BrickApplication(arcade.Window):
 
         # Set up the player
         self.score = 0
-        self.player_sprite = Player("images/bat_black.png", SPRITE_SCALING)
+        self.player_sprite = Player("images/paddle_02.png", SPRITE_SCALING)
         self.player_sprite.center_x = (SCREEN_WIDTH / 2)
         self.player_sprite.center_y = 20
         self.all_sprites_list.append(self.player_sprite)
 
         # Set up the ball
-        self.ball_sprite = Ball("images/coin_01.png", SPRITE_SCALING / 5)
+        self.ball_sprite = Ball("images/ballBlack_10.png", SPRITE_SCALING / 5)
 
         # Specify the boundaries for where a ball can be.
         # Take into account that we are specifying a center x and y for the
@@ -131,13 +131,13 @@ class BrickApplication(arcade.Window):
 
     def update(self, delta_time):
         """ Movement and game logic """
-        print("({},{})".format(self.ball_sprite.change_x, self.ball_sprite.change_y))
         # Call update on all sprites (The sprites don't do much in this
         # example though.)
         self.all_sprites_list.update()
+        # change ball direction and speed on collision
         if arcade.check_for_collision(self.player_sprite, self.ball_sprite):
             self.ball_sprite.change_y *= -1
-            self.ball_sprite.change_x += (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
+            self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
