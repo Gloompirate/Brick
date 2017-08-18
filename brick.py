@@ -75,8 +75,8 @@ class Ball(arcade.Sprite):
         if self.center_x > self.right_boundary:
             self.change_x *= -1
 
-        # if self.center_y < self.bottom_boundary:
-        #   self.change_y *= -1
+        if self.center_y < self.bottom_boundary:
+            self.change_y *= -1
 
         if self.center_y > self.top_boundary:
             self.change_y *= -1
@@ -188,7 +188,11 @@ class BrickApplication(arcade.Window):
             self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
         hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
         if hit_list:
-            self.ball_sprite.change_y *= -1
+            if int(self.ball_sprite.position[0]) == int(hit_list[0].right) or int(self.ball_sprite.position[0]) == int(hit_list[0].left):
+                self.ball_sprite.change_x *= -1
+            else:
+                self.ball_sprite.change_y *= -1
+            print("ball x position: {} brick right position: {} brick left position: {}".format(self.ball_sprite.position[0], hit_list[0].right, hit_list[0].left))
         for brick in hit_list:
             brick.hits -= 1
             self.score += 1
