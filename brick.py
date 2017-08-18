@@ -29,17 +29,21 @@ class Brick(arcade.Sprite):
 
     def __init__(self,
                  filename: str=None,
+                 brick_type: int=1,
+                 hits: int=1,
                  scale: float=1,
                  image_x: float=0, image_y: float=0,
                  image_width: float=0, image_height: float=0,
-                 center_x: float=0, center_y: float=0, brick_type: int=1, hits: int=2):
+                 center_x: float=0, center_y: float=0):
         super().__init__(filename, scale, image_x, image_y, image_width, image_height, center_x, center_y)
         self.brick_type = brick_type
         self.hits = hits
 
-    def update(self):
+    """def update(self):
         if self.hits == 0:
             self.kill()
+        if self.brick_type == 2 and self.hits == 1:
+            self.filename = "images/brick_blue_cracked.png" """
 
 
 class Ball(arcade.Sprite):
@@ -137,13 +141,21 @@ class BrickApplication(arcade.Window):
 
         # Set up the bricks
         gap = 0
-        for i in range(8):
-            brick = Brick("images/brick_blue.png")
-            brick.center_x = 50 + (i * brick.width) + gap
-            brick.center_y = 400
-            self.all_sprites_list.append(brick)
-            self.brick_list.append(brick)
-            gap += 1
+        jgap = 0
+        for j in range(4):
+            for i in range(10):
+                if j < 2:
+                    hits = 1
+                else:
+                    hits = 2
+                brick = Brick("images/brick_blue.png", 2, hits)
+                brick.center_x = 50 + (i * brick.width) + gap
+                brick.center_y = 399 + (j * brick.height) + jgap
+                self.all_sprites_list.append(brick)
+                self.brick_list.append(brick)
+                gap += 1
+            gap = 0
+            jgap += 1
 
     def on_draw(self):
         """
@@ -180,6 +192,15 @@ class BrickApplication(arcade.Window):
         for brick in hit_list:
             brick.hits -= 1
             self.score += 1
+            if brick.hits == 1:
+                new_brick = Brick("images/brick_blue_cracked.png", 1, 1)
+                new_brick.center_x = brick.center_x
+                new_brick.center_y = brick.center_y
+                self.all_sprites_list.append(new_brick)
+                self.brick_list.append(new_brick)
+                brick.kill()
+            if brick.hits == 0:
+                brick.kill()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
