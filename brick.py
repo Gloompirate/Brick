@@ -1,5 +1,4 @@
 import arcade
-import random
 
 SPRITE_SCALING = 1
 
@@ -24,6 +23,24 @@ class Player(arcade.Sprite):
             self.bottom = 0
         elif self.top > SCREEN_HEIGHT - 1:
             self.top = SCREEN_HEIGHT - 1
+
+
+class Brick(arcade.Sprite):
+
+    def __init__(self,
+                 filename: str=None,
+                 scale: float=1,
+                 image_x: float=0, image_y: float=0,
+                 image_width: float=0, image_height: float=0,
+                 center_x: float=0, center_y: float=0, brick_type: int=1, hits: int=2):
+        super().__init__(filename, scale, image_x, image_y, image_width, image_height, center_x, center_y)
+        self.brick_type = brick_type
+        self.hits = hits
+
+    def update(self):
+        if self.hits == 0:
+            self.kill()
+
 
 class Ball(arcade.Sprite):
 
@@ -54,8 +71,8 @@ class Ball(arcade.Sprite):
         if self.center_x > self.right_boundary:
             self.change_x *= -1
 
-        if self.center_y < self.bottom_boundary:
-            self.change_y *= -1
+        # if self.center_y < self.bottom_boundary:
+        #   self.change_y *= -1
 
         if self.center_y > self.top_boundary:
             self.change_y *= -1
@@ -90,12 +107,12 @@ class BrickApplication(arcade.Window):
 
         # Sprite lists
         self.all_sprites_list = arcade.SpriteList()
-
+        self.brick_list = arcade.SpriteList()
         # Set up the player
         self.score = 0
         self.player_sprite = Player("images/paddle_02.png", SPRITE_SCALING)
         self.player_sprite.center_x = (SCREEN_WIDTH / 2)
-        self.player_sprite.center_y = 20
+        self.player_sprite.center_y = 40
         self.all_sprites_list.append(self.player_sprite)
 
         # Set up the ball
@@ -112,11 +129,21 @@ class BrickApplication(arcade.Window):
         self.ball_sprite.top_boundary = SCREEN_HEIGHT - self.ball_sprite.height // 2
 
         self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
-        self.ball_sprite.center_y = 50
+        self.ball_sprite.center_y = 70
 
         self.ball_sprite.change_x = 2
         self.ball_sprite.change_y = 2
         self.all_sprites_list.append(self.ball_sprite)
+
+        # Set up the bricks
+        gap = 0
+        for i in range(8):
+            brick = Brick("images/brick_blue.png")
+            brick.center_x = 50 + (i * brick.width) + gap
+            brick.center_y = 400
+            self.all_sprites_list.append(brick)
+            self.brick_list.append(brick)
+            gap += 1
 
     def on_draw(self):
         """
@@ -129,6 +156,15 @@ class BrickApplication(arcade.Window):
         # Draw all the sprites.
         self.all_sprites_list.draw()
 
+        # Put the text on the screen.
+        output = f"Score: {self.score}"
+
+        # Is this the same text as last frame? If not, set up a new text object
+        if not self.score_text or output != self.score_text.text:
+            self.score_text = arcade.create_text(output, arcade.color.BLACK, 14)
+        # Render the text
+        arcade.render_text(self.score_text, 0, 10)
+
     def update(self, delta_time):
         """ Movement and game logic """
         # Call update on all sprites (The sprites don't do much in this
@@ -138,6 +174,12 @@ class BrickApplication(arcade.Window):
         if arcade.check_for_collision(self.player_sprite, self.ball_sprite):
             self.ball_sprite.change_y *= -1
             self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
+        hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
+        if hit_list:
+            self.ball_sprite.change_y *= -1
+        for brick in hit_list:
+            brick.hits -= 1
+            self.score += 1
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
