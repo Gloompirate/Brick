@@ -101,10 +101,10 @@ class BrickApplication(arcade.Window):
 
         # Set up the player info
         self.player_sprite = None
-        self.score = 0
-        self.lives = 3
-        self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
-        self.score_text = arcade.create_text("Score: 0", arcade.color.BLACK, 14)
+        # self.score = 0
+        # self.lives = 3
+        # self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
+        # self.score_text = arcade.create_text("Score: 0", arcade.color.BLACK, 14)
 
         # Set the background colour.
         arcade.set_background_color(arcade.color.WHITE)
@@ -114,11 +114,17 @@ class BrickApplication(arcade.Window):
         self.ball_locked = BALL_LOCKED
 
     def setup(self):
-        """ Set up the game and initialize the variables. """
+        """ Set up the game and initialise the variables. """
 
         # Create Sprite Lists to hold the sprites.
         self.all_sprites_list = arcade.SpriteList()
         self.brick_list = arcade.SpriteList()
+
+        # Set up the game.
+        self.score = 0
+        self.lives = 3
+        self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
+        self.score_text = arcade.create_text("Score: 0", arcade.color.BLACK, 14)
 
         # Set up the Player.
         self.player_sprite = Player("images/paddle_02.png", SPRITE_SCALING)
@@ -235,8 +241,6 @@ class BrickApplication(arcade.Window):
         """ Movement and game logic """
         # If the game is started and not currently paused or game over.
         if self.current_state == GAME_RUNNING:
-            # Debugging
-            print("Ball change_x: {}, Player change_x: {}".format(self.ball_sprite.change_x, self.player_sprite.change_x))
 
             # Call update on all sprites
             self.all_sprites_list.update()
@@ -311,6 +315,10 @@ class BrickApplication(arcade.Window):
         elif self.current_state == GAME_PAUSE:
             if key == arcade.key.ESCAPE:
                 self.current_state = GAME_RUNNING
+        elif self.current_state == GAME_OVER:
+            if key == arcade.key.SPACE:
+                self.current_state = GAME_RUNNING
+                self.setup()
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
