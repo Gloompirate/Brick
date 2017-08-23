@@ -185,6 +185,15 @@ class BrickApplication(arcade.Window):
             output = "Press Space to restart"
             arcade.draw_text(output, 200, 300, arcade.color.BLACK, 24)
 
+    def draw_game_pause(self):
+        """
+        Draw "Game over" across the screen.
+        """
+        output = "Game Paused"
+        arcade.draw_text(output, 200, 400, arcade.color.BLACK, 54)
+        output = "Press Escape to restart"
+        arcade.draw_text(output, 200, 300, arcade.color.BLACK, 24)
+
     def draw_game(self):
 
         # Draw all the sprites.
@@ -210,81 +219,95 @@ class BrickApplication(arcade.Window):
         # This command has to happen before drawing anything to the screen.
         arcade.start_render()
 
-        # check what we need to draw based on what state the game is in
+        # Check what we need to draw based on what state the game is in.
         if self.current_state == GAME_RUNNING:
             self.draw_game()
+        elif self.current_state == GAME_PAUSE:
+            self.draw_game()
+            self.draw_game_pause()  # Draw both screens so that the pause screen acts as an overlay.
         elif self.current_state == GAME_OVER:
             self.draw_game()
-            self.draw_game_over()  # draw both screen so the game over message acts as an overlay
+            self.draw_game_over()  # Draw both screen so the game over message acts as an overlay.
 
     def update(self, delta_time):
         """ Movement and game logic """
-        # Call update on all sprites
-        self.all_sprites_list.update()
+        # If the game is started and not currently paused or game over.
+        if self.current_state == GAME_RUNNING:
+            # Call update on all sprites
+            self.all_sprites_list.update()
 
-        # Change the Ball direction and speed on collision with the paddle
-        if arcade.check_for_collision(self.player_sprite, self.ball_sprite):
-            self.ball_sprite.change_y *= -1
-            self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
-
-        # Make a list of any bricks that the Ball collided with.
-        hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
-        if hit_list:
-            # Change the direction of acceleration in the x-axis if it hits the side of a brick.
-            if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
-                self.ball_sprite.change_x *= -1
-            else:
+            # Change the Ball direction and speed on collision with the paddle
+            if arcade.check_for_collision(self.player_sprite, self.ball_sprite):
                 self.ball_sprite.change_y *= -1
-            print("ball x position: {} brick right position: {} brick left position: {}".format(self.ball_sprite.position[0], hit_list[0].right, hit_list[0].left))
-        for brick in hit_list:
-            brick.hits -= 1
-            self.score += 1
-            if brick.hits == 1:
-                new_brick = Brick("images/brick_blue_cracked.png", 1, 1)
-                new_brick.center_x = brick.center_x
-                new_brick.center_y = brick.center_y
-                self.all_sprites_list.append(new_brick)
-                self.brick_list.append(new_brick)
-                brick.kill()
-            if brick.hits == 0:
-                brick.kill()
+                self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
 
-        # Check to see if the ball has left the game area.
-        # If it has reduce the number of lives by one and either reposition the Ball
-        # if the player has lives left, or its game over.
-        if self.ball_sprite.center_y < 0:
-            self.lives -= 1
-            self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
-            self.ball_sprite.center_y = 70
-            self.ball_sprite.change_x = 2
-            self.ball_sprite.change_y = 2
-            if self.lives == 0:
-                self.ball_sprite.kill()
-                self.current_state = GAME_OVER
+            # Make a list of any bricks that the Ball collided with.
+            hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
+            if hit_list:
+                # Change the direction of acceleration in the x-axis if it hits the side of a brick.
+                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
+                    self.ball_sprite.change_x *= -1
+                else:
+                    self.ball_sprite.change_y *= -1
+                print("ball x position: {} brick right position: {} brick left position: {}".format(self.ball_sprite.position[0], hit_list[0].right, hit_list[0].left))
+            for brick in hit_list:
+                brick.hits -= 1
+                self.score += 1
+                if brick.hits == 1:
+                    new_brick = Brick("images/brick_blue_cracked.png", 1, 1)
+                    new_brick.center_x = brick.center_x
+                    new_brick.center_y = brick.center_y
+                    self.all_sprites_list.append(new_brick)
+                    self.brick_list.append(new_brick)
+                    brick.kill()
+                if brick.hits == 0:
+                    brick.kill()
+
+            # Check to see if the ball has left the game area.
+            # If it has reduce the number of lives by one and either reposition the Ball
+            # if the player has lives left, or its game over.
+            if self.ball_sprite.center_y < 0:
+                self.lives -= 1
+                self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
+                self.ball_sprite.center_y = 70
+                self.ball_sprite.change_x = 2
+                self.ball_sprite.change_y = 2
+                if self.lives == 0:
+                    self.ball_sprite.kill()
+                    self.current_state = GAME_OVER
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-
-        if key == arcade.key.LEFT:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = MOVEMENT_SPEED
-        """ UP and DOWN are not currently used.
-        elif key == arcade.key.UP:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        """
+        # Check the game has started, and isn't paused or finished before
+        # updating the values. Escape can be used to pause the game here.
+        if self.current_state == GAME_RUNNING:
+            if key == arcade.key.LEFT:
+                self.player_sprite.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT:
+                self.player_sprite.change_x = MOVEMENT_SPEED
+            elif key == arcade.key.ESCAPE:
+                self.current_state = GAME_PAUSE
+            """ UP and DOWN are not currently used.
+            elif key == arcade.key.UP:
+                self.player_sprite.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN:
+                self.player_sprite.change_y = -MOVEMENT_SPEED
+            """
+        elif self.current_state == GAME_PAUSE:
+            if key == arcade.key.ESCAPE:
+                self.current_state = GAME_RUNNING
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
-
-        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_x = 0
-        """ UP and DOWN are not currently used
-        elif key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        """
+        # Check the game has started, and isn't paused or finished before
+        # updating the values.
+        if self.current_state == GAME_RUNNING:
+            if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+                self.player_sprite.change_x = 0
+            """ UP and DOWN are not currently used
+            elif key == arcade.key.UP or key == arcade.key.DOWN:
+                self.player_sprite.change_y = 0
+            """
 
 
 def main():
