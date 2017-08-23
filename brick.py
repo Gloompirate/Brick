@@ -9,6 +9,7 @@ START_MENU = 0
 GAME_RUNNING = 1
 GAME_PAUSE = 2
 GAME_OVER = 3
+BALL_LOCKED = True
 
 
 class Player(arcade.Sprite):
@@ -138,10 +139,10 @@ class BrickApplication(arcade.Window):
         self.ball_sprite.top_boundary = SCREEN_HEIGHT - self.ball_sprite.height // 2
         # Put the ball in the starting position
         self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
-        self.ball_sprite.center_y = 70
+        self.ball_sprite.center_y = 58
         # Set the initial acceleration rate of the Ball
-        self.ball_sprite.change_x = 2
-        self.ball_sprite.change_y = 2
+        self.ball_sprite.change_x = 0
+        self.ball_sprite.change_y = 0
         # Add the Ball to the Sprite List.
         self.all_sprites_list.append(self.ball_sprite)
 
@@ -249,7 +250,6 @@ class BrickApplication(arcade.Window):
                     self.ball_sprite.change_x *= -1
                 else:
                     self.ball_sprite.change_y *= -1
-                print("ball x position: {} brick right position: {} brick left position: {}".format(self.ball_sprite.position[0], hit_list[0].right, hit_list[0].left))
             for brick in hit_list:
                 brick.hits -= 1
                 self.score += 1
