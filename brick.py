@@ -115,7 +115,7 @@ class BrickApplication(arcade.Window):
         arcade.set_background_color(arcade.color.WHITE)
 
         # Game state
-        self.current_state = START_MENU
+        self.current_state = GAME_RUNNING
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -166,13 +166,16 @@ class BrickApplication(arcade.Window):
             gap = 0
             jgap += 1
 
-    def on_draw(self):
-        """
-        Render the screen.
-        """
+    def draw_game_over(self):
+            """
+            Draw "Game over" across the screen.
+            """
+            output = "Game Over"
+            arcade.draw_text(output, 200, 400, arcade.color.BLACK, 54)
+            output = "Press Space to restart"
+            arcade.draw_text(output, 200, 300, arcade.color.BLACK, 24)
 
-        # This command has to happen before we start drawing
-        arcade.start_render()
+    def draw_game(self):
 
         # Draw all the sprites.
         self.all_sprites_list.draw()
@@ -189,6 +192,19 @@ class BrickApplication(arcade.Window):
         # Render the text
         arcade.render_text(self.score_text, 0, 10)
         arcade.render_text(self.lives_text, 500, 10)
+
+    def on_draw(self):
+        """
+        Render the screen.
+        """
+        # This command has to happen before we start drawing
+        arcade.start_render()
+
+        if self.current_state == GAME_RUNNING:
+            self.draw_game()
+        elif self.current_state == GAME_OVER:
+            self.draw_game()
+            self.draw_game_over()
 
     def update(self, delta_time):
         """ Movement and game logic """
@@ -219,11 +235,18 @@ class BrickApplication(arcade.Window):
                 brick.kill()
             if brick.hits == 0:
                 brick.kill()
-
+        # check to see if the ball has left the game area
+        # if it has reduce the number of lives by one and either reposition the ball
+        # if the player has lives left, or invoke game over
         if self.ball_sprite.center_y < 0:
             self.lives -= 1
             self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
             self.ball_sprite.center_y = 70
+            self.ball_sprite.change_x = 2
+            self.ball_sprite.change_y = 2
+            if self.lives == 0:
+                self.ball_sprite.kill()
+                self.current_state = GAME_OVER
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
