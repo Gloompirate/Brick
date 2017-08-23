@@ -1,12 +1,10 @@
 import arcade
 
+# Setup the constants that will be used
 SPRITE_SCALING = 1
-
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
-
 MOVEMENT_SPEED = 10
-
 START_MENU = 0
 GAME_RUNNING = 1
 GAME_PAUSE = 2
@@ -16,9 +14,13 @@ GAME_OVER = 3
 class Player(arcade.Sprite):
 
     def update(self):
+        """
+        Update the player variables.
+        """
         self.center_x += self.change_x
         self.center_y += self.change_y
 
+        # Make sure the player cannot move out of the screen area.
         if self.left < 0:
             self.left = 0
         elif self.right > SCREEN_WIDTH - 1:
@@ -32,76 +34,68 @@ class Player(arcade.Sprite):
 
 class Brick(arcade.Sprite):
 
-    def __init__(self,
-                 filename: str=None,
-                 brick_type: int=1,
-                 hits: int=1,
-                 scale: float=1,
-                 image_x: float=0, image_y: float=0,
-                 image_width: float=0, image_height: float=0,
-                 center_x: float=0, center_y: float=0):
+    def __init__(self, filename: str=None, brick_type: int=1, hits: int=1, scale: float=1, image_x: float=0, image_y: float=0,
+                 image_width: float=0, image_height: float=0, center_x: float=0, center_y: float=0):
+        """Create a new Brick, extends the arcade.Sprite class.
+        Attributes:
+            brick_type (int): The type of brick.
+            hits (int): The number of times the brick must be hit before it is destroyed.
+        """
+        # Call the parent class (Sprite) constructor.
         super().__init__(filename, scale, image_x, image_y, image_width, image_height, center_x, center_y)
         self.brick_type = brick_type
         self.hits = hits
-
-    """def update(self):
-        if self.hits == 0:
-            self.kill()
-        if self.brick_type == 2 and self.hits == 1:
-            self.filename = "images/brick_blue_cracked.png" """
 
 
 class Ball(arcade.Sprite):
 
     def __init__(self, filename, sprite_scaling):
         """ Constructor. """
-        # Call the parent class (Sprite) constructor
+        # Call the parent class (Sprite) constructor.
         super().__init__(filename, sprite_scaling)
 
-        # Instance variables that control the edges of where we bounce
+        # Instance variables that control the edges of where the Ball will bounce.
         self.left_boundary = 0
         self.right_boundary = 0
         self.top_boundary = 0
         self.bottom_boundary = 0
 
+        # Instance variables that control the rate of acceleration of the Ball.
         self.change_x = 0
         self.change_y = 0
 
     def update(self):
-
+        """Updates the position of the Ball. """
         # Move the ball
         self.center_x -= self.change_x
         self.center_y -= self.change_y
 
-        # If we are out-of-bounds, then 'bounce'
+        # If we are out-of-bounds, then 'bounce' by changing reversing the direction in which the Ball is accelerating.
         if self.center_x < self.left_boundary:
             self.change_x *= -1
-
         if self.center_x > self.right_boundary:
             self.change_x *= -1
-
-        # un-comment to bounce off the bottom
-        # if self.center_y < self.bottom_boundary:
-        #     self.change_y *= -1
-
         if self.center_y > self.top_boundary:
             self.change_y *= -1
+        # un-comment to bounce off the bottom.
+        # if self.center_y < self.bottom_boundary:
+        #     self.change_y *= -1
 
 
 class BrickApplication(arcade.Window):
     """
-    Main application class.
+    Main application class, extends arcade.Window class.
     """
 
     def __init__(self, width, height, title):
         """
-        Initializer
+        Initialiser
         """
 
-        # Call the parent class initializer
+        # Call the parent class initialiser.
         super().__init__(width, height, title)
 
-        # Variables that will hold sprite lists
+        # Variables that will hold the sprite lists.
         self.all_sprites_list = None
 
         # Set up the player info
@@ -109,46 +103,50 @@ class BrickApplication(arcade.Window):
         self.score = 0
         self.lives = 3
         self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
-        self.score_text = self.score
+        self.score_text = arcade.create_text("Score: 0", arcade.color.BLACK, 14)
 
-        # Set the background color
+        # Set the background colour.
         arcade.set_background_color(arcade.color.WHITE)
 
-        # Game state
+        # Set the current game state.
         self.current_state = GAME_RUNNING
 
     def setup(self):
         """ Set up the game and initialize the variables. """
 
-        # Sprite lists
+        # Create Sprite Lists to hold the sprites.
         self.all_sprites_list = arcade.SpriteList()
         self.brick_list = arcade.SpriteList()
+
+        # Set up the Player.
         self.player_sprite = Player("images/paddle_02.png", SPRITE_SCALING)
         self.player_sprite.center_x = (SCREEN_WIDTH / 2)
         self.player_sprite.center_y = 40
         self.all_sprites_list.append(self.player_sprite)
 
-        # Set up the ball
+        # Set up the Ball.
         self.ball_sprite = Ball("images/ballBlack_10.png", SPRITE_SCALING / 5)
 
-        # Specify the boundaries for where a ball can be.
+        # Specify the boundaries for where the Ball can be.
         # Take into account that we are specifying a center x and y for the
-        # ball, and the ball has a size. So we can't have 0, 0 as the
-        # position because 3/4 of the ball would be off-screen. We have to
-        # start at half the width of the ball.
+        # Ball, and the Ball has a size. So we can't have 0, 0 as the
+        # position because 3/4 of the Ball would be off-screen. We have to
+        # start at half the width of the Ball.
         self.ball_sprite.left_boundary = self.ball_sprite.width // 2
         self.ball_sprite.right_boundary = SCREEN_WIDTH - self.ball_sprite.width // 2
         self.ball_sprite.bottom_boundary = self.ball_sprite.height // 2
         self.ball_sprite.top_boundary = SCREEN_HEIGHT - self.ball_sprite.height // 2
-
+        # Put the ball in the starting position
         self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
         self.ball_sprite.center_y = 70
-
+        # Set the initial acceleration rate of the Ball
         self.ball_sprite.change_x = 2
         self.ball_sprite.change_y = 2
+        # Add the Ball to the Sprite List.
         self.all_sprites_list.append(self.ball_sprite)
 
-        # Set up the bricks
+        # Set up the bricks in a test pattern.
+        # This will be replaced by a function to read a level from a data source
         gap = 0
         jgap = 0
         for j in range(4):
@@ -180,12 +178,12 @@ class BrickApplication(arcade.Window):
         # Draw all the sprites.
         self.all_sprites_list.draw()
 
-        # Put the text on the screen.
+        # Generate the text Strings.
         score_output = f"Score: {self.score}"
         lives_output = f"Lives: {self.lives}"
 
         # Is this the same text as last frame? If not, set up a new text object
-        if not self.score_text or score_output != self.score_text.text:
+        if score_output != self.score_text.text:
             self.score_text = arcade.create_text(score_output, arcade.color.BLACK, 14)
         if lives_output != self.lives_text.text:
             self.lives_text = arcade.create_text(lives_output, arcade.color.BLACK, 14)
@@ -197,27 +195,30 @@ class BrickApplication(arcade.Window):
         """
         Render the screen.
         """
-        # This command has to happen before we start drawing
+        # This command has to happen before drawing anything to the screen.
         arcade.start_render()
 
+        # check what we need to draw based on what state the game is in
         if self.current_state == GAME_RUNNING:
             self.draw_game()
         elif self.current_state == GAME_OVER:
             self.draw_game()
-            self.draw_game_over()
+            self.draw_game_over()  # draw both screen so the game over message acts as an overlay
 
     def update(self, delta_time):
         """ Movement and game logic """
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
+        # Call update on all sprites
         self.all_sprites_list.update()
-        # change ball direction and speed on collision
+
+        # Change the Ball direction and speed on collision with the paddle
         if arcade.check_for_collision(self.player_sprite, self.ball_sprite):
             self.ball_sprite.change_y *= -1
             self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
+
+        # Make a list of any bricks that the Ball collided with.
         hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
         if hit_list:
-            # this should change the direction in the x-axis if it hits the side of a brick (doesn't currently work)
+            # This should change the direction in the x-axis if it hits the side of a brick (doesn't currently work)
             if int(self.ball_sprite.position[0]) == int(hit_list[0].right) or int(self.ball_sprite.position[0]) == int(hit_list[0].left):
                 self.ball_sprite.change_x *= -1
             else:
@@ -235,9 +236,10 @@ class BrickApplication(arcade.Window):
                 brick.kill()
             if brick.hits == 0:
                 brick.kill()
-        # check to see if the ball has left the game area
-        # if it has reduce the number of lives by one and either reposition the ball
-        # if the player has lives left, or invoke game over
+
+        # Check to see if the ball has left the game area.
+        # If it has reduce the number of lives by one and either reposition the Ball
+        # if the player has lives left, or its game over.
         if self.ball_sprite.center_y < 0:
             self.lives -= 1
             self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
@@ -251,22 +253,26 @@ class BrickApplication(arcade.Window):
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
-        if key == arcade.key.UP:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.LEFT:
+        if key == arcade.key.LEFT:
             self.player_sprite.change_x = -MOVEMENT_SPEED
         elif key == arcade.key.RIGHT:
             self.player_sprite.change_x = MOVEMENT_SPEED
+        """ UP and DOWN are not currently used.
+        elif key == arcade.key.UP:
+            self.player_sprite.change_y = MOVEMENT_SPEED
+        elif key == arcade.key.DOWN:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+        """
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
+        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
             self.player_sprite.change_x = 0
+        """ UP and DOWN are not currently used
+        elif key == arcade.key.UP or key == arcade.key.DOWN:
+            self.player_sprite.change_y = 0
+        """
 
 
 def main():
