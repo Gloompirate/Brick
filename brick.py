@@ -147,6 +147,8 @@ class BrickApplication(arcade.Window):
 
         # Set up the bricks in a test pattern.
         # This will be replaced by a function to read a level from a data source
+        # 4 rows of 10 bricks, top two rows take 2 hits
+        """
         gap = 0
         jgap = 0
         for j in range(4):
@@ -162,6 +164,16 @@ class BrickApplication(arcade.Window):
                 self.brick_list.append(brick)
                 gap += 1
             gap = 0
+            jgap += 1
+        """
+        # 15 rows of 1 brick
+        jgap = 0
+        for j in range(15):
+            brick = Brick("images/brick_blue.png", 2, 1)
+            brick.center_x = 0 + brick.width
+            brick.center_y = 50 + (j * brick.height) + jgap
+            self.all_sprites_list.append(brick)
+            self.brick_list.append(brick)
             jgap += 1
 
     def draw_game_over(self):
@@ -218,8 +230,8 @@ class BrickApplication(arcade.Window):
         # Make a list of any bricks that the Ball collided with.
         hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
         if hit_list:
-            # This should change the direction in the x-axis if it hits the side of a brick (doesn't currently work)
-            if int(self.ball_sprite.position[0]) == int(hit_list[0].right) or int(self.ball_sprite.position[0]) == int(hit_list[0].left):
+            # Change the direction of acceleration in the x-axis if it hits the side of a brick.
+            if abs(int(self.ball_sprite.position[0]) - int(hit_list[0].right)) < 6 or abs(int(self.ball_sprite.position[0]) - int(hit_list[0].left)) < 6:
                 self.ball_sprite.change_x *= -1
             else:
                 self.ball_sprite.change_y *= -1
