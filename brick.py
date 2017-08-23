@@ -231,7 +231,7 @@ class BrickApplication(arcade.Window):
         hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
         if hit_list:
             # Change the direction of acceleration in the x-axis if it hits the side of a brick.
-            if abs(int(self.ball_sprite.position[0]) - int(hit_list[0].right)) < 6 or abs(int(self.ball_sprite.position[0]) - int(hit_list[0].left)) < 6:
+            if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
                 self.ball_sprite.change_x *= -1
             else:
                 self.ball_sprite.change_y *= -1
