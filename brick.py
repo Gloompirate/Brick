@@ -173,16 +173,33 @@ class BrickApplication(arcade.Window):
                 gap += 1
             gap = 0
             jgap += 1
-        """
         # 15 rows of 1 brick
+        """
+        """
         jgap = 0
-        for j in range(15):
+        for j in range(1, 22):
             brick = Brick("images/brick_blue.png", 2, 1)
-            brick.center_x = 0 + brick.width
-            brick.center_y = 50 + (j * brick.height) + jgap
+            brick.center_x = 0 + brick.width / 2
+            brick.center_y = 0 + (j * brick.height) + jgap
             self.all_sprites_list.append(brick)
             self.brick_list.append(brick)
             jgap += 1
+        """
+        map1 = [[[1, 1] for i in range(10)] for j in range(10)]
+        map1[5][5] = [0, 0]
+        gap = 0
+        igap = 0
+        for i in range(len(map1)):
+            for j in range(len(map1[0])):
+                if map1[i][j][0]:
+                    brick = Brick("images/brick_blue.png", map1[i][j][1], 1)
+                brick.left = (j * brick.width) + gap
+                brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
+                self.all_sprites_list.append(brick)
+                self.brick_list.append(brick)
+                gap += 1
+            gap = 0
+            igap += 1
 
     def draw_game_over(self):
             """
