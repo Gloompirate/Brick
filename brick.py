@@ -7,6 +7,11 @@ SCREEN_HEIGHT = 600
 
 MOVEMENT_SPEED = 10
 
+START_MENU = 0
+GAME_RUNNING = 1
+GAME_PAUSE = 2
+GAME_OVER = 3
+
 
 class Player(arcade.Sprite):
 
@@ -75,8 +80,9 @@ class Ball(arcade.Sprite):
         if self.center_x > self.right_boundary:
             self.change_x *= -1
 
-        if self.center_y < self.bottom_boundary:
-            self.change_y *= -1
+        # un-comment to bounce off the bottom
+        # if self.center_y < self.bottom_boundary:
+        #     self.change_y *= -1
 
         if self.center_y > self.top_boundary:
             self.change_y *= -1
@@ -101,10 +107,15 @@ class BrickApplication(arcade.Window):
         # Set up the player info
         self.player_sprite = None
         self.score = 0
-        self.score_text = 0
+        self.lives = 3
+        self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
+        self.score_text = self.score
 
         # Set the background color
         arcade.set_background_color(arcade.color.WHITE)
+
+        # Game state
+        self.current_state = START_MENU
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -112,8 +123,6 @@ class BrickApplication(arcade.Window):
         # Sprite lists
         self.all_sprites_list = arcade.SpriteList()
         self.brick_list = arcade.SpriteList()
-        # Set up the player
-        self.score = 0
         self.player_sprite = Player("images/paddle_02.png", SPRITE_SCALING)
         self.player_sprite.center_x = (SCREEN_WIDTH / 2)
         self.player_sprite.center_y = 40
@@ -169,13 +178,17 @@ class BrickApplication(arcade.Window):
         self.all_sprites_list.draw()
 
         # Put the text on the screen.
-        output = f"Score: {self.score}"
+        score_output = f"Score: {self.score}"
+        lives_output = f"Lives: {self.lives}"
 
         # Is this the same text as last frame? If not, set up a new text object
-        if not self.score_text or output != self.score_text.text:
-            self.score_text = arcade.create_text(output, arcade.color.BLACK, 14)
+        if not self.score_text or score_output != self.score_text.text:
+            self.score_text = arcade.create_text(score_output, arcade.color.BLACK, 14)
+        if lives_output != self.lives_text.text:
+            self.lives_text = arcade.create_text(lives_output, arcade.color.BLACK, 14)
         # Render the text
         arcade.render_text(self.score_text, 0, 10)
+        arcade.render_text(self.lives_text, 500, 10)
 
     def update(self, delta_time):
         """ Movement and game logic """
@@ -188,6 +201,7 @@ class BrickApplication(arcade.Window):
             self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
         hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
         if hit_list:
+            # this should change the direction in the x-axis if it hits the side of a brick (doesn't currently work)
             if int(self.ball_sprite.position[0]) == int(hit_list[0].right) or int(self.ball_sprite.position[0]) == int(hit_list[0].left):
                 self.ball_sprite.change_x *= -1
             else:
@@ -205,6 +219,11 @@ class BrickApplication(arcade.Window):
                 brick.kill()
             if brick.hits == 0:
                 brick.kill()
+
+        if self.ball_sprite.center_y < 0:
+            self.lives -= 1
+            self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
+            self.ball_sprite.center_y = 70
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
