@@ -236,7 +236,7 @@ class BrickApplication(arcade.Window):
         # If the game is started and not currently paused or game over.
         if self.current_state == GAME_RUNNING:
             # Debugging
-            print("Ball change_x: {}, Player change_x".format(self.ball_sprite.change_x, self.player_sprite.change_x))
+            print("Ball change_x: {}, Player change_x: {}".format(self.ball_sprite.change_x, self.player_sprite.change_x))
 
             # Call update on all sprites
             self.all_sprites_list.update()
@@ -244,8 +244,8 @@ class BrickApplication(arcade.Window):
             # If the ball is locked to the paddle set the ball acceleration equal to the paddle acceleration,
             # also set the ball position to the same as the paddle
             if self.ball_locked:
-                self.ball_sprite._get_change_x = -(self.player_sprite.change_x)
-                self.ball_sprite._get_change_y = -(self.player_sprite.change_y)
+                self.ball_sprite.change_x = -self.player_sprite.change_x
+                self.ball_sprite.change_y = -self.player_sprite.change_y
                 self.ball_sprite.center_x = self.player_sprite.center_x
             # Change the Ball direction and speed on collision with the paddle
             elif arcade.check_for_collision(self.player_sprite, self.ball_sprite):
@@ -278,10 +278,11 @@ class BrickApplication(arcade.Window):
             # if the player has lives left, or its game over.
             if self.ball_sprite.center_y < 0:
                 self.lives -= 1
-                self.ball_sprite.center_x = (SCREEN_WIDTH / 2)
-                self.ball_sprite.center_y = 70
-                self.ball_sprite.change_x = 2
-                self.ball_sprite.change_y = 2
+                self.ball_sprite.center_x = self.player_sprite.center_x
+                self.ball_sprite.center_y = 59
+                self.ball_sprite.change_x = 0
+                self.ball_sprite.change_y = 0
+                self.ball_locked = True
                 if self.lives == 0:
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
@@ -300,7 +301,7 @@ class BrickApplication(arcade.Window):
             elif key == arcade.key.SPACE:
                 if self.ball_locked:
                     self.ball_locked = False
-                    self.ball_sprite.change_y = 2
+                    self.ball_sprite.change_y = (MOVEMENT_SPEED / 5)
             """ UP and DOWN are not currently used.
             elif key == arcade.key.UP:
                 self.player_sprite.change_y = MOVEMENT_SPEED
