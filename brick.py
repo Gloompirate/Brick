@@ -1,8 +1,20 @@
+"""
+TODO:
+    Sort out physics of hitting the side of the bricks,
+    Add some randomness when the ball hits the centre of the paddle
+    Title / reset screens
+    Powerup bricks
+    Powerups
+    More Levels
+    Sounds?
+"""
+
 import arcade
 
 # Setup the constants that will be used
 SPRITE_SCALING = 1
 BRICK_SCALING = 1.5
+BALL_SCALING = 1.3
 SCREEN_WIDTH = 610
 SCREEN_HEIGHT = 600
 MOVEMENT_SPEED = 10
@@ -18,7 +30,8 @@ BRICK_TYPES = {
     1: ["images/bricks/blue.png", 1],
     2: ["images/bricks/red.png", 2, 1],
     3: ["images/bricks/green.png", 2, 2],
-    4: ["images/bricks/purple.png", 2, 3]
+    4: ["images/bricks/purple.png", 2, 3],
+    5: ["images/bricks/black_red.png", 1]
 }
 
 
@@ -142,7 +155,7 @@ class BrickApplication(arcade.Window):
         self.all_sprites_list.append(self.player_sprite)
 
         # Set up the Ball.
-        self.ball_sprite = Ball("images/balls/red.png", SPRITE_SCALING)
+        self.ball_sprite = Ball("images/balls/red.png", BALL_SCALING)
 
         # Specify the boundaries for where the Ball can be.
         # Take into account that we are specifying a center x and y for the
@@ -194,7 +207,7 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        map1 = [[4 for i in range(12)] for j in range(12)]
+        map1 = [[5 for i in range(12)] for j in range(12)]
         map1[5][5] = 2
         gap = 0
         igap = 0
