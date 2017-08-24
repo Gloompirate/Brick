@@ -123,8 +123,10 @@ class BrickApplication(arcade.Window):
         # Set up the game.
         self.score = 0
         self.lives = 3
-        self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
-        self.score_text = arcade.create_text("Score: 0", arcade.color.BLACK, 14)
+        self.lives_text = arcade.create_text("Lives: 0", arcade.color.WHITE, 14)
+        self.score_text = arcade.create_text("Score: 0", arcade.color.WHITE, 14)
+        # Load the background image, do it here so it isn't loaded more than once.
+        self.background = arcade.load_texture("images/background2.jpg")
 
         # Set up the Player.
         self.player_sprite = Player("images/paddle_02.png", SPRITE_SCALING)
@@ -206,21 +208,25 @@ class BrickApplication(arcade.Window):
             Draw "Game over" across the screen.
             """
             output = "Game Over"
-            arcade.draw_text(output, 200, 400, arcade.color.BLACK, 54)
+            arcade.draw_text(output, 100, 400, arcade.color.WHITE, 54)
             output = "Press Space to restart"
-            arcade.draw_text(output, 200, 300, arcade.color.BLACK, 24)
+            arcade.draw_text(output, 100, 300, arcade.color.WHITE, 24)
 
     def draw_game_pause(self):
         """
         Draw "Game over" across the screen.
         """
         output = "Game Paused"
-        arcade.draw_text(output, 200, 400, arcade.color.BLACK, 54)
+        arcade.draw_text(output, 100, 400, arcade.color.WHITE, 54)
         output = "Press Escape to restart"
-        arcade.draw_text(output, 200, 300, arcade.color.BLACK, 24)
+        arcade.draw_text(output, 100, 300, arcade.color.WHITE, 24)
 
     def draw_game(self):
 
+        # Draw the background first.
+        # Draw the background texture
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                      SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
         # Draw all the sprites.
         self.all_sprites_list.draw()
 
@@ -230,9 +236,9 @@ class BrickApplication(arcade.Window):
 
         # Is this the same text as last frame? If not, set up a new text object
         if score_output != self.score_text.text:
-            self.score_text = arcade.create_text(score_output, arcade.color.BLACK, 14)
+            self.score_text = arcade.create_text(score_output, arcade.color.WHITE, 14)
         if lives_output != self.lives_text.text:
-            self.lives_text = arcade.create_text(lives_output, arcade.color.BLACK, 14)
+            self.lives_text = arcade.create_text(lives_output, arcade.color.WHITE, 14)
         # Render the text
         arcade.render_text(self.score_text, 0, 10)
         arcade.render_text(self.lives_text, 500, 10)
@@ -276,12 +282,11 @@ class BrickApplication(arcade.Window):
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             if hit_list:
-                # See if the side of the brick has been hit
-                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 3 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 3:
-                    if abs(self.ball_sprite.position[1] - hit_list[0].top) < 3 or abs(self.ball_sprite.position[1] - hit_list[0].bottom) < 3:
-                        print("Hit top or bottom")
-                        self.ball_sprite.change_y *= -1
-                    else:
+                # See where the ball hit the brick
+                if abs(self.ball_sprite.position[1] - hit_list[0].top) < 3 or abs(self.ball_sprite.position[1] - hit_list[0].bottom) < 3:
+                    print("Hit top or bottom")
+                    self.ball_sprite.change_y *= -1
+                elif abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
                         print("Hit side")
                         self.ball_sprite.change_x *= -1
                 else:
