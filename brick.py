@@ -13,6 +13,7 @@ GAME_OVER = 3
 BALL_LOCKED = True
 
 # Bricks, in format ["Image path", Number of hits, next brick if hits are greater than 1]
+# This is just a prototype, will need to change this to add special bick types
 BRICK_TYPES = {
     1: ["images/bricks/blue.png", 1],
     2: ["images/bricks/red.png", 2, 1],
@@ -210,13 +211,13 @@ class BrickApplication(arcade.Window):
             igap += 3
 
     def draw_game_over(self):
-            """
-            Draw "Game over" across the screen.
-            """
-            output = "Game Over"
-            arcade.draw_text(output, 100, 400, arcade.color.WHITE, 54)
-            output = "Press Space to restart"
-            arcade.draw_text(output, 100, 300, arcade.color.WHITE, 24)
+        """
+        Draw "Game over" across the screen.
+        """
+        output = "Game Over"
+        arcade.draw_text(output, 100, 400, arcade.color.WHITE, 54)
+        output = "Press Space to restart"
+        arcade.draw_text(output, 100, 300, arcade.color.WHITE, 24)
 
     def draw_game_pause(self):
         """
@@ -298,6 +299,8 @@ class BrickApplication(arcade.Window):
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
+            # Check every Brick that was hit and remove it and replace it with the next brick,
+            # or just remove it if it has been destroyed.
             for brick in hit_list:
                 brick.hits -= 1
                 self.score += 1
