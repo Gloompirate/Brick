@@ -176,12 +176,11 @@ class BrickApplication(arcade.Window):
         # 15 rows of 1 brick
         """
         """
-        # 15 rows of 1 brick
         jgap = 0
-        for j in range(15):
+        for j in range(1, 22):
             brick = Brick("images/brick_blue.png", 2, 1)
-            brick.center_x = 0 + brick.width
-            brick.center_y = 50 + (j * brick.height) + jgap
+            brick.center_x = 0 + brick.width / 2
+            brick.center_y = 0 + (j * brick.height) + jgap
             self.all_sprites_list.append(brick)
             self.brick_list.append(brick)
             jgap += 1
@@ -278,8 +277,7 @@ class BrickApplication(arcade.Window):
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             if hit_list:
                 # Change the direction of acceleration in the x-axis if it hits the side of a brick.
-                print("Ball center x: {}, Ball left: {}, Brick right: {}". format(self.ball_sprite.position[0], self.ball_sprite.left, hit_list[0].right))
-                if abs(self.ball_sprite.left - hit_list[0].right) < 6 or abs(self.ball_sprite.right - hit_list[0].left) < 6:
+                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
                     self.ball_sprite.change_x *= -1
                 else:
                     self.ball_sprite.change_y *= -1
