@@ -174,9 +174,14 @@ class BrickApplication(arcade.Window):
             gap = 0
             jgap += 1
 <<<<<<< HEAD
+<<<<<<< HEAD
         # 15 rows of 1 brick
         """
         
+=======
+        """
+        # 15 rows of 1 brick
+>>>>>>> parent of 5737d5d... Started building code to read levels from list of lists
 =======
         """
         # 15 rows of 1 brick
@@ -189,6 +194,7 @@ class BrickApplication(arcade.Window):
             self.all_sprites_list.append(brick)
             self.brick_list.append(brick)
             jgap += 1
+<<<<<<< HEAD
 <<<<<<< HEAD
         """
         map1 = [[[1, 1] for i in range(10)] for j in range(10)]
@@ -208,6 +214,8 @@ class BrickApplication(arcade.Window):
             igap += 1
         """
 =======
+=======
+>>>>>>> parent of 5737d5d... Started building code to read levels from list of lists
 
 >>>>>>> parent of 5737d5d... Started building code to read levels from list of lists
     def draw_game_over(self):
