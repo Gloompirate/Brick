@@ -101,10 +101,6 @@ class BrickApplication(arcade.Window):
 
         # Set up the player info
         self.player_sprite = None
-        # self.score = 0
-        # self.lives = 3
-        # self.lives_text = arcade.create_text("Lives: 0", arcade.color.BLACK, 14)
-        # self.score_text = arcade.create_text("Score: 0", arcade.color.BLACK, 14)
 
         # Set the background colour.
         arcade.set_background_color(arcade.color.WHITE)
