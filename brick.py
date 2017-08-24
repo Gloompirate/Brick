@@ -175,7 +175,7 @@ class BrickApplication(arcade.Window):
             jgap += 1
         # 15 rows of 1 brick
         """
-        """
+        
         jgap = 0
         for j in range(1, 22):
             brick = Brick("images/brick_blue.png", 2, 1)
@@ -200,7 +200,7 @@ class BrickApplication(arcade.Window):
                 gap += 1
             gap = 0
             igap += 1
-
+        """
     def draw_game_over(self):
             """
             Draw "Game over" across the screen.
@@ -279,9 +279,13 @@ class BrickApplication(arcade.Window):
                 # Lots of stuff here for debugging.
                 print("Current Direction is: {}". format(self.print_collision()))
                 # Change the direction of acceleration in the x-axis if it hits the side of a brick.
-                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
-                    print("Hit side")
-                    self.ball_sprite.change_x *= -1
+                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 2 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 2:
+                    if abs(self.ball_sprite.position[0] - hit_list[0].top) < 2 or abs(self.ball_sprite.position[0] - hit_list[0].bottom) < 2:
+                        print("Hit Corner")
+                        self.ball_sprite.change_y *= -1
+                    else:
+                        print("Hit side")
+                        self.ball_sprite.change_x *= -1
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
