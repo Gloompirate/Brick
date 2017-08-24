@@ -276,11 +276,16 @@ class BrickApplication(arcade.Window):
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             if hit_list:
+                # Lots of stuff here for debugging.
+                print("Current Direction is: {}". format(self.print_collision()))
                 # Change the direction of acceleration in the x-axis if it hits the side of a brick.
                 if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
+                    print("Hit side")
                     self.ball_sprite.change_x *= -1
                 else:
+                    print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
+                print("New Direction is: {}". format(self.print_collision()))
             for brick in hit_list:
                 brick.hits -= 1
                 self.score += 1
@@ -307,6 +312,19 @@ class BrickApplication(arcade.Window):
                 if self.lives == 0:
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
+
+    def print_collision(self):
+        ball_x_direction = ""
+        ball_y_direction = ""
+        if self.ball_sprite.change_x > 0:
+            ball_x_direction = "RIGHT"
+        else:
+            ball_x_direction = "LEFT"
+        if self.ball_sprite.change_y > 0:
+            ball_y_direction = "UP"
+        else:
+            ball_y_direction = "DOWN"
+        return(ball_y_direction + " " + ball_x_direction)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
