@@ -275,6 +275,7 @@ class BrickApplication(arcade.Window):
 
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
+            """
             if hit_list:
                 # Lots of stuff here for debugging.
                 print("Current Direction is: {}". format(self.print_collision()))
@@ -286,6 +287,18 @@ class BrickApplication(arcade.Window):
                     else:
                         print("Hit side")
                         self.ball_sprite.change_x *= -1
+                else:
+                    print("Hit top or bottom")
+                    self.ball_sprite.change_y *= -1
+                print("New Direction is: {}". format(self.print_collision()))
+            """
+            for brick in hit_list:
+                print("Hit number: {}".format(self.score))
+                print("Current Direction is: {}". format(self.print_collision()))
+                # Change the direction of acceleration in the x-axis if it hits the side of a brick.
+                if abs(self.ball_sprite.position[0] - brick.right) < 3 or abs(self.ball_sprite.position[0] - brick.left) < 3:
+                    print("Hit side")
+                    self.ball_sprite.change_x *= -1
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
