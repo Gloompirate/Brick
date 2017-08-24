@@ -12,6 +12,14 @@ GAME_PAUSE = 2
 GAME_OVER = 3
 BALL_LOCKED = True
 
+# Bricks, in format ["Image path", Number of hits]
+BRICK_TYPES = {
+    1: ["images/bricks/blue.png", 1],
+    2: ["images/bricks/red.png", 1],
+    3: ["images/bricks/green.png", 1],
+    4: ["images/bricks/purple.png", 1]
+}
+
 
 class Player(arcade.Sprite):
 
@@ -36,17 +44,18 @@ class Player(arcade.Sprite):
 
 class Brick(arcade.Sprite):
 
-    def __init__(self, filename: str=None, brick_type: int=1, hits: int=1, scale: float=1, image_x: float=0, image_y: float=0,
+    def __init__(self, brick_type: int=1, filename: str=None, scale: float=1, image_x: float=0, image_y: float=0,
                  image_width: float=0, image_height: float=0, center_x: float=0, center_y: float=0):
         """Create a new Brick, extends the arcade.Sprite class.
         Attributes:
             brick_type (int): The type of brick.
             hits (int): The number of times the brick must be hit before it is destroyed.
         """
+        filename = BRICK_TYPES[brick_type][0]
         # Call the parent class (Sprite) constructor.
         super().__init__(filename, scale, image_x, image_y, image_width, image_height, center_x, center_y)
         self.brick_type = brick_type
-        self.hits = hits
+        self.hits = 1
 
 
 class Ball(arcade.Sprite):
@@ -126,7 +135,7 @@ class BrickApplication(arcade.Window):
         self.background = arcade.load_texture("images/background2.jpg")
 
         # Set up the Player.
-        self.player_sprite = Player("images/paddles/red.png", SPRITE_SCALING)
+        self.player_sprite = Player("images/paddles/red.png", 1)
         self.player_sprite.center_x = (SCREEN_WIDTH // 2)
         self.player_sprite.center_y = 40
         self.all_sprites_list.append(self.player_sprite)
@@ -184,14 +193,14 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        map1 = [[[1, 1] for i in range(12)] for j in range(12)]
-        map1[5][5] = [0, 0]
+        map1 = [[1 for i in range(12)] for j in range(12)]
+        map1[5][5] = 2
         gap = 0
         igap = 0
         for i in range(len(map1)):
             for j in range(len(map1[0])):
-                if map1[i][j][0]:
-                    brick = Brick("images/bricks/blue.png", map1[i][j][1], 1, 1.5)
+                if map1[i][j]:
+                    brick = Brick(map1[i][j], "", 1.5)
                 brick.left = (j * brick.width) + gap
                 brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
                 self.all_sprites_list.append(brick)
