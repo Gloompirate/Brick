@@ -197,9 +197,9 @@ class BrickApplication(arcade.Window):
                 brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
                 self.all_sprites_list.append(brick)
                 self.brick_list.append(brick)
-                gap += 1
+                gap += 3
             gap = 0
-            igap += 1
+            igap += 3
 
     def draw_game_over(self):
             """
@@ -276,10 +276,16 @@ class BrickApplication(arcade.Window):
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             if hit_list:
-                # Change the direction of acceleration in the x-axis if it hits the side of a brick.
-                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
-                    self.ball_sprite.change_x *= -1
+                # See if the side of the brick has been hit
+                if abs(self.ball_sprite.position[0] - hit_list[0].right) < 3 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 3:
+                    if abs(self.ball_sprite.position[1] - hit_list[0].top) < 3 or abs(self.ball_sprite.position[1] - hit_list[0].bottom) < 3:
+                        print("Hit top or bottom")
+                        self.ball_sprite.change_y *= -1
+                    else:
+                        print("Hit side")
+                        self.ball_sprite.change_x *= -1
                 else:
+                    print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
             for brick in hit_list:
                 brick.hits -= 1
