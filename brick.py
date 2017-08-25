@@ -15,7 +15,7 @@ import random
 # Setup the constants that will be used
 SPRITE_SCALING = 1
 BRICK_SCALING = 1.5
-BALL_SCALING = 1.3
+BALL_SCALING = 1.5
 SCREEN_WIDTH = 610
 SCREEN_HEIGHT = 600
 MOVEMENT_SPEED = 10
@@ -151,7 +151,7 @@ class BrickApplication(arcade.Window):
         self.lives_text = arcade.create_text("Lives: 0", arcade.color.WHITE, 14)
         self.score_text = arcade.create_text("Score: 0", arcade.color.WHITE, 14)
         # Load the background image, do it here so it isn't loaded more than once.
-        self.background = arcade.load_texture("images/background2.jpg")
+        self.background = arcade.load_texture("images/backgrounds/background2.jpg")
 
         # Set up the Player.
         self.player_sprite = Player("images/paddles/red.png", SPRITE_SCALING)
@@ -220,11 +220,11 @@ class BrickApplication(arcade.Window):
             for j in range(len(map1[0])):
                 if map1[i][j]:
                     brick = Brick(map1[i][j], BRICK_SCALING)
-                brick.left = (j * brick.width) + gap
-                brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
-                self.all_sprites_list.append(brick)
-                self.brick_list.append(brick)
-                gap += 3
+                    brick.left = (j * brick.width) + gap
+                    brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
+                    self.all_sprites_list.append(brick)
+                    self.brick_list.append(brick)
+                    gap += 3
             gap = 0
             igap += 3
 
