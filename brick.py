@@ -38,6 +38,9 @@ BRICK_TYPES = {
     5: ["images/bricks/black_red.png", 1, 0, 1]
 }
 
+#setup globals
+brick_id = 0
+brick_list = arcade.SpriteList()
 
 class Player(arcade.Sprite):
 
@@ -75,7 +78,34 @@ class Brick(arcade.Sprite):
         self.brick_type = brick_type
         self.hits = BRICK_TYPES[brick_type][1]
         self.special = BRICK_TYPES[brick_type][3]
+        global brick_id
+        self.id = brick_id
+        print(self.id)
+        brick_id += 1
 
+    def do_special(self):
+        specials = []
+        if self.special == 1:
+            print("Special!")
+            specials = self.find_bricks_cardinal(self)
+        for special_brick in specials:
+            if special_brick.special:
+                specials.extend(special_brick.do_special())
+        return specials
+
+    def find_bricks_row_left(self, brick):
+        return [x for x in brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x >= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
+
+    def find_bricks_adjacent(self, brick):
+        return [x for x in brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x <= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
+
+    def find_bricks_stacked(self, brick):
+        return [x for x in brick_list if (x.center_y - brick.height - BRICK_GAP_VERTICAL) <= brick.center_y <= (x.center_y + brick.height + BRICK_GAP_VERTICAL) and x.center_x == brick.center_x]
+
+    def find_bricks_cardinal(self, brick):
+        matches = self.find_bricks_adjacent(brick)
+        matches.extend(self.find_bricks_stacked(brick))
+        return matches
 
 class Ball(arcade.Sprite):
 
@@ -143,7 +173,8 @@ class BrickApplication(arcade.Window):
 
         # Create Sprite Lists to hold the sprites.
         self.all_sprites_list = arcade.SpriteList()
-        self.brick_list = arcade.SpriteList()
+        # self.brick_list = arcade.SpriteList()
+        global brick_list
 
         # Set up the game.
         self.score = 0
@@ -212,7 +243,7 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        random_bricks = [0] * 9 + [1] * 20 + [2] * 10 + [3] * 8 + [4] * 5 + [5] * 3
+        random_bricks = [0] * 9 + [1] * 20 + [2] * 10 + [3] * 8 + [4] * 5 + [5] * 30
         # random_bricks = [1]
         map1 = [[random.choice(random_bricks) for i in range(12)] for j in range(12)]
         map1[5][5] = 2
@@ -225,7 +256,8 @@ class BrickApplication(arcade.Window):
                     brick.left = (j * brick.width) + gap
                     brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
                     self.all_sprites_list.append(brick)
-                    self.brick_list.append(brick)
+                    # self.brick_list.append(brick)
+                    brick_list.append(brick)
                 gap += 3
             gap = 0
             igap += 3
@@ -312,7 +344,8 @@ class BrickApplication(arcade.Window):
                     self.ball_sprite.change_x -= speed_change / 10
 
             # Make a list of any bricks that the Ball collided with.
-            hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
+            # hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
+            hit_list = arcade.check_for_collision_with_list(self.ball_sprite, brick_list)
             # Check each brick that was hit.
             x_change_count = 0
             y_change_count = 0
@@ -336,14 +369,16 @@ class BrickApplication(arcade.Window):
                         new_brick.center_x = brick.center_x
                         new_brick.center_y = brick.center_y
                         self.all_sprites_list.append(new_brick)
-                        self.brick_list.append(new_brick)
+                        # self.brick_list.append(new_brick)
+                        brick_list.append(new_brick)
                         brick.kill()
                     else:
                         brick.kill()
                     # Code to do special abilities here.
                     if brick.special:
                         if brick.special == 1:  # explode cardinal bricks
-                            matches = self.find_bricks_cardinal(brick)
+                            matches = brick.do_special()
+                            print("Matches: {}".format(matches))
                             for match in matches:
                                 match.kill()
                                 self.score += 1
@@ -368,7 +403,7 @@ class BrickApplication(arcade.Window):
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
 
-    def find_bricks_row_left(self, brick):
+    """def find_bricks_row_left(self, brick):
         return [x for x in self.brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x >= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
 
     def find_bricks_adjacent(self, brick):
@@ -380,7 +415,7 @@ class BrickApplication(arcade.Window):
     def find_bricks_cardinal(self, brick):
         bricks = self.find_bricks_adjacent(brick)
         bricks.extend(self.find_bricks_stacked(brick))
-        return bricks
+        return bricks"""
 
     def side_collision(self, obj1, obj2):
         """
