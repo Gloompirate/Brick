@@ -169,7 +169,7 @@ class BrickApplication(arcade.Window):
         self.ball_sprite.top_boundary = SCREEN_HEIGHT - self.ball_sprite.height // 2
         # Put the ball in the starting position
         self.ball_sprite.center_x = (SCREEN_WIDTH // 2)
-        self.ball_sprite.center_y = self.player_sprite.top + 10
+        self.ball_sprite.bottom = self.player_sprite.top + 1
         # Set the initial acceleration rate of the Ball
         self.ball_sprite.change_x = 0
         self.ball_sprite.change_y = 0
@@ -298,7 +298,12 @@ class BrickApplication(arcade.Window):
             # Change the Ball direction and speed on collision with the paddle
             elif arcade.check_for_collision(self.player_sprite, self.ball_sprite):
                 self.ball_sprite.change_y *= -1
-                self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
+                # Make sure the ball wont just bounce up and down in the centre of the paddle.
+                speed_change = (self.ball_sprite.position[0] - self.player_sprite.position[0])
+                if speed_change == 0:
+                    self.ball_sprite.change_x -= random.uniform(-0.5, 0.5)
+                else:
+                    self.ball_sprite.change_x -= speed_change / 10
 
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
@@ -365,25 +370,6 @@ class BrickApplication(arcade.Window):
         """ See if one set of coords overlaps another set or coords.
         """
         return (a_min <= b_max) and (b_min <= a_max)
-
-    """
-    These functions are not currently used.
-    def collision_test(self, obj1, obj2):
-         See if the two objects have collided.
-        
-        return self.range_overlap(obj1._get_left(), obj1._get_right(), obj2._get_left(), obj2._get_right()) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), obj2._get_bottom(), obj2._get_top())
-
-    def collision_test_list(self, obj1, obj_list):
-         See if an object has collided with any of the objects 
-            in the provided list. Return the objects that did collide 
-            with obj1.
-        
-        hits = []
-        for obj in obj_list:
-            if self.collision_test(obj1, obj):
-                hits.append(obj)
-        return hits
-    """
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
