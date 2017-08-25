@@ -313,11 +313,10 @@ class BrickApplication(arcade.Window):
             for brick in hit_list:
                 # See where the ball hit the brick
                 if self.side_collision(self.ball_sprite, brick):
-                    print("Hit side")
                     if self.ball_sprite.change_x == 0:
-                        self.ball_sprite.change_x = random.randint(-1, 1)
+                        self.ball_sprite.change_x = random.uniform(-1, 1)
                     else:
-                        self.ball_sprite.change_x *= -1
+                        self.ball_sprite.change_x *= random.uniform(-1, -0.5)
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
