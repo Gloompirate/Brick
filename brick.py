@@ -307,6 +307,7 @@ class BrickApplication(arcade.Window):
             if hit_list:
                 print("Number of hits: {}".format(len(hit_list)))
             for brick in hit_list:
+                # See where the ball hit the brick
                 if self.side_collision(self.ball_sprite, brick):
                     print("Hit side")
                     if self.ball_sprite.change_x == 0:
@@ -316,22 +317,6 @@ class BrickApplication(arcade.Window):
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
-                # See where the ball hit the brick
-                # print("Ball Top: {}, Brick Bottom: {}, Ball Bottom: {}, Brick Top: {}".format(
-                #    self.ball_sprite._get_top(), brick._get_bottom(), self.ball_sprite._get_bottom(), brick._get_top()))
-                # print("Ball Right: {}, Brick Left: {}, Ball Left: {}, Brick Right: {}".format(
-                #    self.ball_sprite._get_right(), brick._get_left(), self.ball_sprite._get_left(), brick._get_right()))
-                """
-                if abs(self.ball_sprite._get_bottom() - brick._get_top()) < 2 or abs(self.ball_sprite._get_top() - brick._get_bottom()) < 2:
-                    print("Hit top or bottom")
-                    self.ball_sprite.change_y *= -1
-                elif abs(self.ball_sprite._get_left() - brick._get_right()) < 2 or abs(self.ball_sprite._get_right() - brick._get_right()) < 2:
-                        print("Hit side")
-                        self.ball_sprite.change_x *= -1
-                """
-                # else:
-                #    print("Hit top or bottom")
-                #    self.ball_sprite.change_y *= -1
                 # Check the Brick that was hit and remove it and replace it with the next brick,
                 # or just remove it if it has been destroyed.
                 brick.hits -= 1
@@ -360,10 +345,11 @@ class BrickApplication(arcade.Window):
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
 
-    def collision_test(self, obj1, obj2):
-        return self.range_overlap(obj1._get_left(), obj1._get_right(), obj2._get_left(), obj2._get_right()) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), obj2._get_bottom(), obj2._get_top())
-
     def side_collision(self, obj1, obj2):
+        """
+        Check for a side collision between two sprites.
+        Expects obj1 to be the ball, and obj2 to be the brick.
+        """
         # test right hand side.
         right = obj2._get_right()
         left = right - 1
@@ -376,12 +362,21 @@ class BrickApplication(arcade.Window):
         left_hit = self.range_overlap(obj1._get_left(), obj1._get_right(), left, right) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), bottom, top)
         return left_hit or right_hit
 
+    def collision_test(self, obj1, obj2):
+        """ See if the two objects have collided.
+        """
+        return self.range_overlap(obj1._get_left(), obj1._get_right(), obj2._get_left(), obj2._get_right()) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), obj2._get_bottom(), obj2._get_top())
+
     def range_overlap(self, a_min, a_max, b_min, b_max):
-        '''Neither range is completely greater than the other
-        '''
+        """ See if one set of coords overlaps another set or coords.
+        """
         return (a_min <= b_max) and (b_min <= a_max)
 
     def collision_test_list(self, obj1, obj_list):
+        """ See if an object has collided with any of the objects 
+            in the provided list. Return the objects that did collide 
+            with obj1.
+        """
         hits = []
         for obj in obj_list:
             if self.collision_test(obj1, obj):
