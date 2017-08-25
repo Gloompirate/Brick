@@ -1,6 +1,7 @@
 """
 TODO:
     Sort out physics of hitting the side of the bricks, <------ this!!!!!!!!!!!!!!
+    Move lives and score into global scope?
     Add some randomness when the ball hits the centre of the paddle
     Title / reset screens
     Powerup bricks
@@ -85,13 +86,10 @@ class Brick(arcade.Sprite):
 
     def do_special(self):
         specials = []
-        if self.special == 1:
-            print("Special!")
+        if self.special:
             specials = self.find_bricks_cardinal(self)
         for special_brick in specials:
-            if special_brick.special:
-                specials.extend(special_brick.do_special())
-        return specials
+            special_brick.kill()
 
     def find_bricks_row_left(self, brick):
         return [x for x in brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x >= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
@@ -378,10 +376,10 @@ class BrickApplication(arcade.Window):
                     if brick.special:
                         if brick.special == 1:  # explode cardinal bricks
                             matches = brick.do_special()
-                            print("Matches: {}".format(matches))
+                            """print("Matches: {}".format(matches))
                             for match in matches:
                                 match.kill()
-                                self.score += 1
+                                self.score += 1"""
                         brick.kill()
             # If the ball hit something figure out which way to make it bounce.
             if hit_list:
