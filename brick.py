@@ -361,26 +361,29 @@ class BrickApplication(arcade.Window):
         left_hit = self.range_overlap(obj1._get_left(), obj1._get_right(), left, right) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), bottom, top)
         return left_hit or right_hit
 
-    def collision_test(self, obj1, obj2):
-        """ See if the two objects have collided.
-        """
-        return self.range_overlap(obj1._get_left(), obj1._get_right(), obj2._get_left(), obj2._get_right()) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), obj2._get_bottom(), obj2._get_top())
-
     def range_overlap(self, a_min, a_max, b_min, b_max):
         """ See if one set of coords overlaps another set or coords.
         """
         return (a_min <= b_max) and (b_min <= a_max)
 
+    """
+    These functions are not currently used.
+    def collision_test(self, obj1, obj2):
+         See if the two objects have collided.
+        
+        return self.range_overlap(obj1._get_left(), obj1._get_right(), obj2._get_left(), obj2._get_right()) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), obj2._get_bottom(), obj2._get_top())
+
     def collision_test_list(self, obj1, obj_list):
-        """ See if an object has collided with any of the objects 
+         See if an object has collided with any of the objects 
             in the provided list. Return the objects that did collide 
             with obj1.
-        """
+        
         hits = []
         for obj in obj_list:
             if self.collision_test(obj1, obj):
                 hits.append(obj)
         return hits
+    """
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
