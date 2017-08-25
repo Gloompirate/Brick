@@ -304,10 +304,12 @@ class BrickApplication(arcade.Window):
             # Check each brick that was hit.
             for brick in hit_list:
                 # See where the ball hit the brick
-                if abs(self.ball_sprite.position[1] - brick.top) < 3 or abs(self.ball_sprite.position[1] - brick.bottom) < 3:
+                print("Ball Top: {}, Brick Bottom: {}, Ball Bottom: {}, Brick Top: {}".format(
+                    self.ball_sprite._get_top(), brick._get_bottom(), self.ball_sprite._get_bottom(), brick._get_top()))
+                if self.ball_sprite._get_bottom() == brick._get_top() or self.ball_sprite._get_top() == brick._get_bottom():
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
-                elif abs(self.ball_sprite.position[0] - brick.right) < 6 or abs(self.ball_sprite.position[0] - brick.left) < 6:
+                elif self.ball_sprite._get_left() == brick._get_right() or self.ball_sprite._get_right() == brick._get_right():
                         print("Hit side")
                         self.ball_sprite.change_x *= -1
                 else:
