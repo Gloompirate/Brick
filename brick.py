@@ -27,14 +27,14 @@ BALL_LOCKED = True
 BRICK_GAP_HORIZONTAL = 3
 BRICK_GAP_VERTICAL = 3
 
-# Bricks, in format ["Image path", Number of hits, next brick if hits are greater than 1, special ability]
+# Bricks, in format ["Image path", Number of hits, next brick once destroyed, special ability]
 # This is just a prototype, will need to change this to add special bick types
 BRICK_TYPES = {
     0: ["", 0, 0, 0],
     1: ["images/bricks/blue.png", 1, 0, 0],
-    2: ["images/bricks/red.png", 2, 1, 0],
-    3: ["images/bricks/green.png", 2, 2, 0],
-    4: ["images/bricks/purple.png", 2, 3, 0],
+    2: ["images/bricks/red.png", 1, 1, 0],
+    3: ["images/bricks/green.png", 1, 2, 0],
+    4: ["images/bricks/purple.png", 1, 3, 0],
     5: ["images/bricks/black_red.png", 1, 0, 1]
 }
 
@@ -212,9 +212,9 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        # random_bricks = [0] * 4 + [1] * 5 + [2] * 3 + [3] * 3 + [4] * 2 + [5] * 50
-        random_bricks = [1]
-        map1 = [[random.choice(random_bricks) for i in range(7)] for j in range(15)]
+        random_bricks = [0] * 9 + [1] * 20 + [2] * 10 + [3] * 8 + [4] * 5 + [5] * 3
+        # random_bricks = [1]
+        map1 = [[random.choice(random_bricks) for i in range(12)] for j in range(12)]
         map1[5][5] = 2
         gap = 0
         igap = 0
@@ -226,7 +226,7 @@ class BrickApplication(arcade.Window):
                     brick.top = SCREEN_HEIGHT - (i * brick.height) - igap
                     self.all_sprites_list.append(brick)
                     self.brick_list.append(brick)
-                    gap += 3
+                gap += 3
             gap = 0
             igap += 3
 
@@ -346,6 +346,7 @@ class BrickApplication(arcade.Window):
                             matches = self.find_bricks_cardinal(brick)
                             for match in matches:
                                 match.kill()
+                                self.score += 1
                         brick.kill()
             # If the ball hit something figure out which way to make it bounce.
             if hit_list:
