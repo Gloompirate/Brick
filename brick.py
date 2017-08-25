@@ -11,7 +11,6 @@ TODO:
 
 import arcade
 import random
-import timeit
 
 # Setup the constants that will be used
 SPRITE_SCALING = 1
@@ -302,14 +301,7 @@ class BrickApplication(arcade.Window):
                 self.ball_sprite.change_x -= (self.ball_sprite.position[0] - self.player_sprite.position[0]) / 10
 
             # Make a list of any bricks that the Ball collided with.
-            # hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
-            
-            # Time each collision function to see which is faster.
-            t = timeit.Timer(lambda: self.collision_test_list(self.ball_sprite, self.brick_list))
-            print("Own: {}".format(t.timeit(1)))
-            t = timeit.Timer(lambda: arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list))
-            print("Pycade: {}".format(t.timeit(1)))
-            hit_list = self.collision_test_list(self.ball_sprite, self.brick_list)
+            hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             # Check each brick that was hit.
             if hit_list:
                 print("Number of hits: {}".format(len(hit_list)))
