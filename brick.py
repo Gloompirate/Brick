@@ -207,7 +207,7 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        map1 = [[5 for i in range(12)] for j in range(12)]
+        map1 = [[5 for i in range(8)] for j in range(12)]
         map1[5][5] = 2
         gap = 0
         igap = 0
@@ -302,14 +302,18 @@ class BrickApplication(arcade.Window):
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             # Check each brick that was hit.
+            if hit_list:
+                print("Number of hits: {}".format(len(hit_list)))
             for brick in hit_list:
                 # See where the ball hit the brick
                 print("Ball Top: {}, Brick Bottom: {}, Ball Bottom: {}, Brick Top: {}".format(
                     self.ball_sprite._get_top(), brick._get_bottom(), self.ball_sprite._get_bottom(), brick._get_top()))
+                print("Ball Right: {}, Brick Left: {}, Ball Left: {}, Brick Right: {}".format(
+                    self.ball_sprite._get_right(), brick._get_left(), self.ball_sprite._get_left(), brick._get_right()))
                 if abs(self.ball_sprite._get_bottom() - brick._get_top()) < 2 or abs(self.ball_sprite._get_top() - brick._get_bottom()) < 2:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
-                elif self.ball_sprite._get_left() == brick._get_right() or self.ball_sprite._get_right() == brick._get_right():
+                elif abs(self.ball_sprite._get_left() - brick._get_right()) < 2 or abs(self.ball_sprite._get_right() - brick._get_right()) < 2:
                         print("Hit side")
                         self.ball_sprite.change_x *= -1
                 #else:
@@ -342,6 +346,19 @@ class BrickApplication(arcade.Window):
                 if self.lives == 0:
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
+
+    def collision_test(self, obj1, obj2):
+        if obj1._get_top() == obj2._get_bottom() or obj1._get_bottom() == obj2._get_top() or obj1._get_right() == obj2._get_left() or obj1._get_left() == obj2._get_right():
+            return True
+        else:
+            return False
+
+    def collision_test_list(self, obj1, obj_list):
+        hits = []
+        for obj in obj_list:
+            if self.collision_test(obj1, obj):
+                hits.append(obj)
+        return hits
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
