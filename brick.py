@@ -24,15 +24,17 @@ GAME_RUNNING = 1
 GAME_PAUSE = 2
 GAME_OVER = 3
 BALL_LOCKED = True
+BRICK_GAP_HORIZONTAL = 3
+BRICK_GAP_VERTICAL = 3
 
-# Bricks, in format ["Image path", Number of hits, next brick if hits are greater than 1]
+# Bricks, in format ["Image path", Number of hits, next brick if hits are greater than 1, special ability]
 # This is just a prototype, will need to change this to add special bick types
 BRICK_TYPES = {
-    1: ["images/bricks/blue.png", 1],
-    2: ["images/bricks/red.png", 2, 1],
-    3: ["images/bricks/green.png", 2, 2],
-    4: ["images/bricks/purple.png", 2, 3],
-    5: ["images/bricks/black_red.png", 1]
+    1: ["images/bricks/blue.png", 1, 0, 0],
+    2: ["images/bricks/red.png", 2, 1, 0],
+    3: ["images/bricks/green.png", 2, 2, 0],
+    4: ["images/bricks/purple.png", 2, 3, 0],
+    5: ["images/bricks/black_red.png", 1, 0, 1]
 }
 
 
@@ -71,6 +73,7 @@ class Brick(arcade.Sprite):
         super().__init__(filename, scale, image_x, image_y, image_width, image_height, center_x, center_y)
         self.brick_type = brick_type
         self.hits = BRICK_TYPES[brick_type][1]
+        self.special = BRICK_TYPES[brick_type][3]
 
 
 class Ball(arcade.Sprite):
