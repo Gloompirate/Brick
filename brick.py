@@ -212,7 +212,8 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        map1 = [[random.randint(0, 5) for i in range(12)] for j in range(12)]
+        random_bricks = [0] * 4 + [1] * 5 + [2] * 3 + [3] * 3 + [4] * 2 + [5] * 50
+        map1 = [[random.choice(random_bricks) for i in range(12)] for j in range(12)]
         map1[5][5] = 2
         gap = 0
         igap = 0
