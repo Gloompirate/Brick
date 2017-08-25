@@ -1,6 +1,6 @@
 """
 TODO:
-    Sort out physics of hitting the side of the bricks,
+    Sort out physics of hitting the side of the bricks, <------ this!!!!!!!!!!!!!!
     Add some randomness when the ball hits the centre of the paddle
     Title / reset screens
     Powerup bricks
@@ -212,7 +212,7 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        map1 = [[5 for i in range(8)] for j in range(12)]
+        map1 = [[random.randint(0, 5) for i in range(12)] for j in range(12)]
         map1[5][5] = 2
         gap = 0
         igap = 0
@@ -312,8 +312,6 @@ class BrickApplication(arcade.Window):
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             # Check each brick that was hit.
-            if hit_list:
-                print("Number of hits: {}".format(len(hit_list)))
             for brick in hit_list:
                 # See where the ball hit the brick
                 if self.side_collision(self.ball_sprite, brick):
@@ -322,7 +320,6 @@ class BrickApplication(arcade.Window):
                     else:
                         self.ball_sprite.change_x *= random.uniform(-1, -0.5)
                 else:
-                    print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
                 # Check the Brick that was hit and remove it and replace it with the next brick,
                 # or just remove it if it has been destroyed.
@@ -343,7 +340,6 @@ class BrickApplication(arcade.Window):
                     if brick.special:
                         if brick.special == 1:  # explode cardinal bricks
                             matches = self.find_bricks_cardinal(brick)
-                            print(matches)
                             for match in matches:
                                 match.kill()
                         brick.kill()
