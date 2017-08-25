@@ -10,6 +10,7 @@ TODO:
 """
 
 import arcade
+import random
 
 # Setup the constants that will be used
 SPRITE_SCALING = 1
@@ -308,7 +309,10 @@ class BrickApplication(arcade.Window):
             for brick in hit_list:
                 if self.side_collision(self.ball_sprite, brick):
                     print("Hit side")
-                    self.ball_sprite.change_x *= -1
+                    if self.ball_sprite.change_x == 0:
+                        self.ball_sprite.change_x = random.randint(-1, 1)
+                    else:
+                        self.ball_sprite.change_x *= -1
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
@@ -362,13 +366,13 @@ class BrickApplication(arcade.Window):
     def side_collision(self, obj1, obj2):
         # test right hand side.
         right = obj2._get_right()
-        left = right - obj1.width / 2
-        top = obj2._get_top()
-        bottom = obj2._get_bottom()
+        left = right - 1
+        top = obj2._get_top() - 1
+        bottom = obj2._get_bottom() + 1
         right_hit = self.range_overlap(obj1._get_left(), obj1._get_right(), left, right) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), bottom, top)
         # test left hand side.
         left = obj2._get_left()
-        right = left - obj1.width / 2
+        right = left + 1
         left_hit = self.range_overlap(obj1._get_left(), obj1._get_right(), left, right) and self.range_overlap(obj1._get_bottom(), obj1._get_top(), bottom, top)
         return left_hit or right_hit
 
