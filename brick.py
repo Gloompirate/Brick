@@ -15,7 +15,7 @@ import random
 # Setup the constants that will be used
 SPRITE_SCALING = 1
 BRICK_SCALING = 1.5
-BALL_SCALING = 1.5
+BALL_SCALING = 1.3
 SCREEN_WIDTH = 610
 SCREEN_HEIGHT = 600
 MOVEMENT_SPEED = 10
@@ -212,8 +212,9 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        random_bricks = [0] * 4 + [1] * 5 + [2] * 3 + [3] * 3 + [4] * 2 + [5] * 50
-        map1 = [[random.choice(random_bricks) for i in range(12)] for j in range(12)]
+        # random_bricks = [0] * 4 + [1] * 5 + [2] * 3 + [3] * 3 + [4] * 2 + [5] * 50
+        random_bricks = [1]
+        map1 = [[random.choice(random_bricks) for i in range(7)] for j in range(15)]
         map1[5][5] = 2
         gap = 0
         igap = 0
@@ -313,15 +314,17 @@ class BrickApplication(arcade.Window):
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
             # Check each brick that was hit.
+            x_change_count = 0
+            y_change_count = 0
             for brick in hit_list:
                 # See where the ball hit the brick
                 if self.side_collision(self.ball_sprite, brick):
                     if self.ball_sprite.change_x == 0:
-                        self.ball_sprite.change_x = random.uniform(-1, 1)
+                        x_change_count += 1
                     else:
-                        self.ball_sprite.change_x *= random.uniform(-1, -0.5)
+                        x_change_count += 1
                 else:
-                    self.ball_sprite.change_y *= -1
+                    y_change_count += 1
                 # Check the Brick that was hit and remove it and replace it with the next brick,
                 # or just remove it if it has been destroyed.
                 brick.hits -= 1
@@ -344,7 +347,12 @@ class BrickApplication(arcade.Window):
                             for match in matches:
                                 match.kill()
                         brick.kill()
-
+            # If the ball hit something figure out which way to make it bounce.
+            if hit_list:
+                if x_change_count >= y_change_count:
+                    self.ball_sprite.change_x *= -1
+                else:
+                    self.ball_sprite.change_y *= -1
             # Check to see if the ball has left the game area.
             # If it has reduce the number of lives by one and either reposition the Ball
             # if the player has lives left, or its game over.
