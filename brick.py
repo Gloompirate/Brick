@@ -336,14 +336,17 @@ class BrickApplication(arcade.Window):
                         new_brick.center_y = brick.center_y
                         self.all_sprites_list.append(new_brick)
                         self.brick_list.append(new_brick)
-                    # Code to do special abilities here.
-                    elif brick.special:
-                        if brick.special == 1:  # explode cardinal bricks
-                            print("special")
-                            matches = [x for x in self.brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x or (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) >= brick.center_x]
-                            print(matches)
                         brick.kill()
                     else:
+                        brick.kill()
+                    # Code to do special abilities here.
+                    if brick.special:
+                        if brick.special == 1:  # explode cardinal bricks
+                            print("special")
+                            matches = [x for x in self.brick_list if (brick.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= x.center_x >= (brick.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y] 
+                            print(matches)
+                            for match in matches:
+                                match.kill()
                         brick.kill()
 
             # Check to see if the ball has left the game area.
@@ -359,6 +362,9 @@ class BrickApplication(arcade.Window):
                 if self.lives == 0:
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
+
+    def find_bricks_row(self, brick):
+        return [x for x in self.brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x >= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
 
     def side_collision(self, obj1, obj2):
         """
