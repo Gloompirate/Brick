@@ -30,6 +30,7 @@ BRICK_GAP_VERTICAL = 3
 # Bricks, in format ["Image path", Number of hits, next brick if hits are greater than 1, special ability]
 # This is just a prototype, will need to change this to add special bick types
 BRICK_TYPES = {
+    0: ["", 0, 0, 0],
     1: ["images/bricks/blue.png", 1, 0, 0],
     2: ["images/bricks/red.png", 2, 1, 0],
     3: ["images/bricks/green.png", 2, 2, 0],
@@ -327,15 +328,23 @@ class BrickApplication(arcade.Window):
                 # or just remove it if it has been destroyed.
                 brick.hits -= 1
                 self.score += 1
-                if brick.hits == 1:
-                    new_brick = Brick(BRICK_TYPES[brick.brick_type][2], BRICK_SCALING)
-                    new_brick.center_x = brick.center_x
-                    new_brick.center_y = brick.center_y
-                    self.all_sprites_list.append(new_brick)
-                    self.brick_list.append(new_brick)
-                    brick.kill()
                 if brick.hits == 0:
-                    brick.kill()
+                    # Check if we are making a new brick.
+                    if BRICK_TYPES[brick.brick_type][2]:
+                        new_brick = Brick(BRICK_TYPES[brick.brick_type][2], BRICK_SCALING)
+                        new_brick.center_x = brick.center_x
+                        new_brick.center_y = brick.center_y
+                        self.all_sprites_list.append(new_brick)
+                        self.brick_list.append(new_brick)
+                    # Code to do special abilities here.
+                    elif brick.special:
+                        if brick.special == 1:  # explode cardinal bricks
+                            print("special")
+                            matches = [x for x in self.brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x or (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) >= brick.center_x]
+                            print(matches)
+                        brick.kill()
+                    else:
+                        brick.kill()
 
             # Check to see if the ball has left the game area.
             # If it has reduce the number of lives by one and either reposition the Ball
