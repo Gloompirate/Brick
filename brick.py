@@ -301,20 +301,20 @@ class BrickApplication(arcade.Window):
 
             # Make a list of any bricks that the Ball collided with.
             hit_list = arcade.check_for_collision_with_list(self.ball_sprite, self.brick_list)
-            if hit_list:
+            # Check each brick that was hit.
+            for brick in hit_list:
                 # See where the ball hit the brick
-                if abs(self.ball_sprite.position[1] - hit_list[0].top) < 3 or abs(self.ball_sprite.position[1] - hit_list[0].bottom) < 3:
+                if abs(self.ball_sprite.position[1] - brick.top) < 3 or abs(self.ball_sprite.position[1] - brick.bottom) < 3:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
-                elif abs(self.ball_sprite.position[0] - hit_list[0].right) < 6 or abs(self.ball_sprite.position[0] - hit_list[0].left) < 6:
+                elif abs(self.ball_sprite.position[0] - brick.right) < 6 or abs(self.ball_sprite.position[0] - brick.left) < 6:
                         print("Hit side")
                         self.ball_sprite.change_x *= -1
                 else:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
-            # Check every Brick that was hit and remove it and replace it with the next brick,
-            # or just remove it if it has been destroyed.
-            for brick in hit_list:
+                # Check the Brick that was hit and remove it and replace it with the next brick,
+                # or just remove it if it has been destroyed.
                 brick.hits -= 1
                 self.score += 1
                 if brick.hits == 1:
