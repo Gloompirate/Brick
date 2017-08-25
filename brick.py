@@ -306,15 +306,15 @@ class BrickApplication(arcade.Window):
                 # See where the ball hit the brick
                 print("Ball Top: {}, Brick Bottom: {}, Ball Bottom: {}, Brick Top: {}".format(
                     self.ball_sprite._get_top(), brick._get_bottom(), self.ball_sprite._get_bottom(), brick._get_top()))
-                if self.ball_sprite._get_bottom() == brick._get_top() or self.ball_sprite._get_top() == brick._get_bottom():
+                if abs(self.ball_sprite._get_bottom() - brick._get_top()) < 2 or abs(self.ball_sprite._get_top() - brick._get_bottom()) < 2:
                     print("Hit top or bottom")
                     self.ball_sprite.change_y *= -1
                 elif self.ball_sprite._get_left() == brick._get_right() or self.ball_sprite._get_right() == brick._get_right():
                         print("Hit side")
                         self.ball_sprite.change_x *= -1
-                else:
-                    print("Hit top or bottom")
-                    self.ball_sprite.change_y *= -1
+                #else:
+                #    print("Hit top or bottom")
+                #    self.ball_sprite.change_y *= -1
                 # Check the Brick that was hit and remove it and replace it with the next brick,
                 # or just remove it if it has been destroyed.
                 brick.hits -= 1
