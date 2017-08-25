@@ -342,8 +342,7 @@ class BrickApplication(arcade.Window):
                     # Code to do special abilities here.
                     if brick.special:
                         if brick.special == 1:  # explode cardinal bricks
-                            print("special")
-                            matches = [x for x in self.brick_list if (brick.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= x.center_x >= (brick.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y] 
+                            matches = self.find_bricks_cardinal(brick)
                             print(matches)
                             for match in matches:
                                 match.kill()
@@ -363,8 +362,19 @@ class BrickApplication(arcade.Window):
                     self.ball_sprite.kill()
                     self.current_state = GAME_OVER
 
-    def find_bricks_row(self, brick):
+    def find_bricks_row_left(self, brick):
         return [x for x in self.brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x >= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
+
+    def find_bricks_adjacent(self, brick):
+        return [x for x in self.brick_list if (x.center_x - brick.width - BRICK_GAP_HORIZONTAL) <= brick.center_x <= (x.center_x + brick.width + BRICK_GAP_HORIZONTAL) and x.center_y == brick.center_y]
+
+    def find_bricks_stacked(self, brick):
+        return [x for x in self.brick_list if (x.center_y - brick.height - BRICK_GAP_VERTICAL) <= brick.center_y <= (x.center_y + brick.height + BRICK_GAP_VERTICAL) and x.center_x == brick.center_x]
+
+    def find_bricks_cardinal(self, brick):
+        bricks = self.find_bricks_adjacent(brick)
+        bricks.extend(self.find_bricks_stacked(brick))
+        return bricks
 
     def side_collision(self, obj1, obj2):
         """
