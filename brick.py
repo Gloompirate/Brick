@@ -144,6 +144,7 @@ class BrickApplication(arcade.Window):
         # Create Sprite Lists to hold the sprites.
         self.all_sprites_list = arcade.SpriteList()
         self.brick_list = arcade.SpriteList()
+        self.effect_list = arcade.SpriteList()
 
         # Set up the game.
         self.score = 0
@@ -212,7 +213,7 @@ class BrickApplication(arcade.Window):
             self.brick_list.append(brick)
             jgap += 1
         """
-        random_bricks = [0] * 9 + [1] * 20 + [2] * 10 + [3] * 8 + [4] * 5 + [5] * 3
+        random_bricks = [0] * 9 + [1] * 20 + [2] * 10 + [3] * 8 + [4] * 5 + [5] * 30
         # random_bricks = [1]
         map1 = [[random.choice(random_bricks) for i in range(12)] for j in range(12)]
         map1[5][5] = 2
@@ -292,6 +293,11 @@ class BrickApplication(arcade.Window):
         # If the game is started and not currently paused or game over.
         if self.current_state == GAME_RUNNING:
 
+            # Show first effect
+            if len(self.effect_list):
+                self.all_sprites_list.append(self.effect_list[0])
+                self.effect_list.pop()
+
             # Call update on all sprites
             self.all_sprites_list.update()
 
@@ -345,8 +351,23 @@ class BrickApplication(arcade.Window):
                         if brick.special == 1:  # explode cardinal bricks
                             matches = self.find_bricks_cardinal(brick)
                             for match in matches:
+                                if match.special:
+                                    more_bricks = self.find_bricks_cardinal(match)
+                                    for more in more_bricks:
+                                        if more not in matches:
+                                            matches.append(more)
+                                fire_effect = arcade.Sprite("images/effects/fire_centre.png", BRICK_SCALING)
+                                fire_effect.center_x = match.center_x
+                                fire_effect.center_y = match.center_y
+                                # self.all_sprites_list.append(fire_effect)
+                                self.effect_list.append(fire_effect)
                                 match.kill()
                                 self.score += 1
+                        fire_effect = arcade.Sprite("images/effects/fire_centre.png", BRICK_SCALING)
+                        fire_effect.center_x = brick.center_x
+                        fire_effect.center_y = brick.center_y
+                        # self.all_sprites_list.append(fire_effect)
+                        self.effect_list.append(fire_effect)
                         brick.kill()
             # If the ball hit something figure out which way to make it bounce.
             if hit_list:
